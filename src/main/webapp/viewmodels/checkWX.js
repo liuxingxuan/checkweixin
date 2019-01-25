@@ -1,0 +1,12 @@
+var app = new Vue({
+    el: '#app',
+    data: {
+        message: 'Hello Vue!'
+    },
+    methods:{
+        checkWXclick(){
+            console.log("checkWXclick click");
+        }
+    }
+
+});
