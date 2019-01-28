@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.IOException;
 import java.util.Date;
 
+/**
+ * 用户
+ */
 @RestController
 @EnableAutoConfiguration
 @RequestMapping("/user")
@@ -24,11 +27,12 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    //打卡接口
     @PostMapping("/checkInOut")
     public void checkInOut(@RequestBody CheckInOutDTO checkInOutDTO) throws IOException {
         JSONObject snsAccessToken = weixinClient.getSnsAccessToken(checkInOutDTO.getCode());
         String openid = snsAccessToken.getString("openid");
-        userService.checkInOut(openid , new Date());
+        userService.checkInOut(openid, new Date());
     }
 
 }

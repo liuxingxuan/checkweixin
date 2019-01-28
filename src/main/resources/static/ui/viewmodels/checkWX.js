@@ -1,4 +1,4 @@
-const ticket = 'LIKLckvwlJT9cWIhEQTwfFHvl7lwcIOco8um9YxpOoldGJs7LQehG9FQ5N6msBJWhJ0ajeaqdpaQBWpqfaLAfQ';
+const ticket = 'LIKLckvwlJT9cWIhEQTwfFHvl7lwcIOco8um9YxpOomdt_KfsM-tuumw165ns93BqineN4PhuxvZI70UO_5fWg';
 
 const timestamp = Date.now();
 const nonceStr = Math.random().toString(16).substr(2);
