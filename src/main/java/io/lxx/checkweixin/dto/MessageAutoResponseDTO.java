@@ -5,20 +5,16 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 
 @JacksonXmlRootElement(localName = "xml")
-public class MessageTextDTO {
+public class MessageAutoResponseDTO {
 
     private String ToUserName;
-
     private String FromUserName;
-
     private Long CreateTime;
-
     private String MsgType;
-
     private String Content;
 
-    @JacksonXmlCData
     @JacksonXmlProperty(localName = "ToUserName")
+    @JacksonXmlCData
     public String getToUserName() {
         return ToUserName;
     }
@@ -27,8 +23,8 @@ public class MessageTextDTO {
         ToUserName = toUserName;
     }
 
-    @JacksonXmlCData
     @JacksonXmlProperty(localName = "FromUserName")
+    @JacksonXmlCData
     public String getFromUserName() {
         return FromUserName;
     }
@@ -46,8 +42,8 @@ public class MessageTextDTO {
         CreateTime = createTime;
     }
 
-    @JacksonXmlCData
     @JacksonXmlProperty(localName = "MsgType")
+    @JacksonXmlCData
     public String getMsgType() {
         return MsgType;
     }
@@ -56,8 +52,8 @@ public class MessageTextDTO {
         MsgType = msgType;
     }
 
-    @JacksonXmlCData
     @JacksonXmlProperty(localName = "Content")
+    @JacksonXmlCData
     public String getContent() {
         return Content;
     }
@@ -66,3 +62,4 @@ public class MessageTextDTO {
         Content = content;
     }
 }
+
