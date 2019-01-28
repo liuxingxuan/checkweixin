@@ -6,4 +6,4 @@ CREATE TABLE `check_in_out_record` (
   PRIMARY KEY (`id`),
   key `idx_openId`(`openId`),
   key `idx_time`(`time`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 auto_increment=1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 auto_increment=1;

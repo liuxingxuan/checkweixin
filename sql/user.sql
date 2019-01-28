@@ -10,4 +10,4 @@ CREATE TABLE `user` (
   `gender` int(11) NOT NULL default 0,
   `avatar_url` char(200),
   PRIMARY KEY (`openId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 auto_increment=1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 auto_increment=1;

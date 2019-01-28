@@ -19,10 +19,10 @@
     delete from check_in_out_record
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="io.lxx.checkweixin.po.CheckInOutRecord">
-    insert into check_in_out_record (id, openId, time
+  <insert id="insert" parameterType="io.lxx.checkweixin.po.CheckInOutRecord" useGeneratedKeys="true" keyProperty="id">
+    insert into check_in_out_record (openId, time
       )
-    values (#{id,jdbcType=INTEGER}, #{openid,jdbcType=VARCHAR}, #{time,jdbcType=TIMESTAMP}
+    values (#{openid,jdbcType=VARCHAR}, #{time,jdbcType=TIMESTAMP}
       )
   </insert>
   <insert id="insertSelective" parameterType="io.lxx.checkweixin.po.CheckInOutRecord">
