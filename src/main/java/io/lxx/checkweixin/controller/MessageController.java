@@ -70,7 +70,7 @@ public class MessageController {
 //    }
 
     @PostMapping(value = "/receive2",produces = MediaType.APPLICATION_XML_VALUE)
-    public Object receive2(@RequestBody JSONObject messageReceiveDTO) throws Exception {
+    public String receive2(@RequestBody JSONObject messageReceiveDTO) throws Exception {
         logger.info("{}",JSON.toJSONString(messageReceiveDTO));
 //        MessageAutoResponseDTO messageAutoResponseDTO = new MessageAutoResponseDTO();
 //        String fromUserName = messageReceiveDTO.getString("FromUserName");
@@ -117,7 +117,8 @@ public class MessageController {
                 messageAutoResponseDTO.setCreateTime(new Date().getTime());
                 messageAutoResponseDTO.setMsgType("text");
                 messageAutoResponseDTO.setContent(String.format("你好，%s，欢迎订阅",nickname));
-                return messageAutoResponseDTO;
+//                return messageAutoResponseDTO;
+                return "aaa";
             }
 
             if (event.equals("CLICK")){
@@ -152,8 +153,10 @@ public class MessageController {
                         messageAutoResponseDTO.setCreateTime(new Date().getTime());
                         messageAutoResponseDTO.setMsgType("text");
                         messageAutoResponseDTO.setContent("不在打卡范围内");
-                        return messageAutoResponseDTO;
+//                        return messageAutoResponseDTO;
+                            return "aad";
                     }
+
 
                     Date now = new Date();
                     LocalTime time = now.toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
@@ -181,7 +184,8 @@ public class MessageController {
                     messageAutoResponseDTO.setCreateTime(new Date().getTime());
                     messageAutoResponseDTO.setMsgType("text");
                     messageAutoResponseDTO.setContent(content);
-                    return messageAutoResponseDTO;
+//                    return messageAutoResponseDTO;
+                    return "dfa";
                 }
             }
 
@@ -200,7 +204,7 @@ public class MessageController {
         }
 
 
-        return null;
+        return "";
 
     }
 
