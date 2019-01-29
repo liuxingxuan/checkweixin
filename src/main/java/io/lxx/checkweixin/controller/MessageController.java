@@ -6,6 +6,7 @@ import com.grum.geocalc.Coordinate;
 import com.grum.geocalc.EarthCalc;
 import com.grum.geocalc.Point;
 import io.lxx.checkweixin.dto.MessageAutoResponseDTO;
+import io.lxx.checkweixin.dto.MessageTextDTO;
 import io.lxx.checkweixin.po.User;
 import io.lxx.checkweixin.service.impl.UserServiceImpl;
 import io.lxx.checkweixin.service.impl.WeixinClientImpl;
@@ -25,6 +26,7 @@ import java.io.PrintWriter;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @RestController
@@ -52,26 +54,25 @@ public class MessageController {
     private Double checkLongitude;
 
 
-
-        @GetMapping("receive")
-    public String receive(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        // 微信加密签名
-        String signature = request.getParameter("signature");
-        // 时间戳
-        String timestamp = request.getParameter("timestamp");
-        // 随机数
-        String nonce = request.getParameter("nonce");
-        // 随机字符串
-        String echostr = request.getParameter("echostr");
-        PrintWriter out = response.getWriter();
-        // 通过检验signature对请求进行校验，若校验成功则原样返回echostr，表示接入成功，否则接入失败
-        if (SignUtil.checkSignature(signature, timestamp, nonce)) {
-            out.print(echostr);
-        }
-        out.close();
-        out = null;
-        return echostr;
-    }
+//    @GetMapping("receive")
+//    public String receive(HttpServletRequest request, HttpServletResponse response) throws IOException {
+//        // 微信加密签名
+//        String signature = request.getParameter("signature");
+//        // 时间戳
+//        String timestamp = request.getParameter("timestamp");
+//        // 随机数
+//        String nonce = request.getParameter("nonce");
+//        // 随机字符串
+//        String echostr = request.getParameter("echostr");
+//        PrintWriter out = response.getWriter();
+//        // 通过检验signature对请求进行校验，若校验成功则原样返回echostr，表示接入成功，否则接入失败
+//        if (SignUtil.checkSignature(signature, timestamp, nonce)) {
+//            out.print(echostr);
+//        }
+//        out.close();
+//        out = null;
+//        return echostr;
+//    }
 
 //    @RequestMapping(value = "/receive", produces = MediaType.APPLICATION_XML_VALUE)
 //    public MessageTextDTO receive(@RequestBody(required = false) String jsonObject, @RequestParam Map<String,String> allParams, @RequestParam(required = false) String echostr){
@@ -97,9 +98,9 @@ public class MessageController {
 //        //return echostr;
 //    }
 
-    @PostMapping(value = "/receive2",produces = MediaType.APPLICATION_XML_VALUE)
-    public Object receive2(@RequestBody JSONObject messageReceiveDTO) throws Exception {
-        logger.info("{}",JSON.toJSONString(messageReceiveDTO));
+    @PostMapping(value = "/receive", produces = MediaType.APPLICATION_XML_VALUE)
+    public Object receive(@RequestBody JSONObject messageReceiveDTO) throws Exception {
+        logger.info("{}", JSON.toJSONString(messageReceiveDTO));
 //        MessageAutoResponseDTO messageAutoResponseDTO = new MessageAutoResponseDTO();
 //        String fromUserName = messageReceiveDTO.getString("FromUserName");
 //        messageAutoResponseDTO.setToUserName(fromUserName);
@@ -113,18 +114,18 @@ public class MessageController {
 //
 //        messageAutoResponseDTO.setContent(String.format("welcome %s",nickname));
         String msgType = messageReceiveDTO.getString("MsgType");
-        if (msgType.equals("event")){
+        if (msgType.equals("event")) {
             String event = messageReceiveDTO.getString("Event");
-            if (event.equals("subscribe")){
+            if (event.equals("subscribe")) {
                 String fromUserName = messageReceiveDTO.getString("FromUserName");
                 JSONObject userInfo = weixinClient.getUserInfo(accessToken, fromUserName);
-                logger.info("{}",userInfo);
+                logger.info("{}", userInfo);
                 String openid = userInfo.getString("openid");
-                if (openid == null || openid.isEmpty()){
+                if (openid == null || openid.isEmpty()) {
                     throw new Exception("openId is null, check access token");
                 }
                 User userOrigin = userService.getById(openid);
-                if (userOrigin != null){
+                if (userOrigin != null) {
                     return "success";
                 }
                 User user = new User();
@@ -144,23 +145,23 @@ public class MessageController {
                 messageAutoResponseDTO.setFromUserName(toUserName);
                 messageAutoResponseDTO.setCreateTime(new Date().getTime());
                 messageAutoResponseDTO.setMsgType("text");
-                messageAutoResponseDTO.setContent(String.format("你好，%s，欢迎订阅",nickname));
+                messageAutoResponseDTO.setContent(String.format("你好，%s，欢迎订阅", nickname));
                 return messageAutoResponseDTO;
             }
 
-            if (event.equals("CLICK")){
+            if (event.equals("CLICK")) {
                 String eventKey = messageReceiveDTO.getString("EventKey");
 
-                if (eventKey == null){
+                if (eventKey == null) {
                     return "success";
                 }
 
-                if (eventKey.equals("checkinout")){
+                if (eventKey.equals("checkinout")) {
 
                     String fromUserName = messageReceiveDTO.getString("FromUserName");
                     String positionUserKey = "position" + fromUserName;
-                    Double latitude = (Double)redisTemplate.opsForHash().get(positionUserKey, "latitude");
-                    Double longitude = (Double)redisTemplate.opsForHash().get(positionUserKey, "longitude");
+                    Double latitude = (Double) redisTemplate.opsForHash().get(positionUserKey, "latitude");
+                    Double longitude = (Double) redisTemplate.opsForHash().get(positionUserKey, "longitude");
 
                     Coordinate lat = Coordinate.fromDegrees(latitude);
                     Coordinate lng = Coordinate.fromDegrees(longitude);
@@ -172,7 +173,7 @@ public class MessageController {
 
                     double distance = EarthCalc.harvesineDistance(userCurrentPosition, checkPosition); //in meters
 
-                    if (distance > 100.00D){
+                    if (distance > 100.00D) {
                         MessageAutoResponseDTO messageAutoResponseDTO = new MessageAutoResponseDTO();
                         messageAutoResponseDTO.setToUserName(fromUserName);
                         String toUserName = messageReceiveDTO.getString("ToUserName");
@@ -191,13 +192,13 @@ public class MessageController {
                     LocalTime offWorkEnd = LocalTime.parse("18:00:00");
 
                     String content = "";
-                    if (time.isAfter(onWorkStart) && time.isBefore(onWorkEnd)){
+                    if (time.isAfter(onWorkStart) && time.isBefore(onWorkEnd)) {
                         content = "上班打卡成功";
-                        userService.checkInOut(fromUserName,new Date());
-                    }else if (time.isAfter(offWorkStart) && time.isBefore(offWorkEnd)){
+                        userService.checkInOut(fromUserName, new Date());
+                    } else if (time.isAfter(offWorkStart) && time.isBefore(offWorkEnd)) {
                         content = "下班打卡成功";
-                        userService.checkInOut(fromUserName,new Date());
-                    }else {
+                        userService.checkInOut(fromUserName, new Date());
+                    } else {
                         content = "不在打卡时间内";
                     }
 
@@ -213,16 +214,16 @@ public class MessageController {
                 }
             }
 
-            if (event.equals("LOCATION")){
+            if (event.equals("LOCATION")) {
                 String fromUserName = messageReceiveDTO.getString("FromUserName");
                 Double latitude = messageReceiveDTO.getDouble("Latitude");
                 Double longitude = messageReceiveDTO.getDouble("Longitude");
                 JSONObject position = new JSONObject();
-                position.put("latitude",latitude);
-                position.put("longitude",longitude);
+                position.put("latitude", latitude);
+                position.put("longitude", longitude);
                 String positionUserKey = "position" + fromUserName;
-                redisTemplate.opsForHash().putAll(positionUserKey,position);
-                redisTemplate.expire(positionUserKey,300, TimeUnit.SECONDS);
+                redisTemplate.opsForHash().putAll(positionUserKey, position);
+                redisTemplate.expire(positionUserKey, 300, TimeUnit.SECONDS);
                 return "success";
             }
         }
