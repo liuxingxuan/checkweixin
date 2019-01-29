@@ -9,6 +9,7 @@ import io.lxx.checkweixin.dto.MessageAutoResponseDTO;
 import io.lxx.checkweixin.po.User;
 import io.lxx.checkweixin.service.impl.UserServiceImpl;
 import io.lxx.checkweixin.service.impl.WeixinClientImpl;
+import io.lxx.checkweixin.utils.SignUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.Date;
@@ -45,6 +51,28 @@ public class MessageController {
     @Value("${checkInOut.longitude}")
     private Double checkLongitude;
 
+
+
+        @GetMapping("receive")
+    public String receive(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        // 微信加密签名
+        String signature = request.getParameter("signature");
+        // 时间戳
+        String timestamp = request.getParameter("timestamp");
+        // 随机数
+        String nonce = request.getParameter("nonce");
+        // 随机字符串
+        String echostr = request.getParameter("echostr");
+        PrintWriter out = response.getWriter();
+        // 通过检验signature对请求进行校验，若校验成功则原样返回echostr，表示接入成功，否则接入失败
+        if (SignUtil.checkSignature(signature, timestamp, nonce)) {
+            out.print(echostr);
+        }
+        out.close();
+        out = null;
+        return echostr;
+    }
+
 //    @RequestMapping(value = "/receive", produces = MediaType.APPLICATION_XML_VALUE)
 //    public MessageTextDTO receive(@RequestBody(required = false) String jsonObject, @RequestParam Map<String,String> allParams, @RequestParam(required = false) String echostr){
 //        logger.info("{}", jsonObject);
@@ -70,7 +98,7 @@ public class MessageController {
 //    }
 
     @PostMapping(value = "/receive2",produces = MediaType.APPLICATION_XML_VALUE)
-    public String receive2(@RequestBody JSONObject messageReceiveDTO) throws Exception {
+    public Object receive2(@RequestBody JSONObject messageReceiveDTO) throws Exception {
         logger.info("{}",JSON.toJSONString(messageReceiveDTO));
 //        MessageAutoResponseDTO messageAutoResponseDTO = new MessageAutoResponseDTO();
 //        String fromUserName = messageReceiveDTO.getString("FromUserName");
@@ -117,8 +145,7 @@ public class MessageController {
                 messageAutoResponseDTO.setCreateTime(new Date().getTime());
                 messageAutoResponseDTO.setMsgType("text");
                 messageAutoResponseDTO.setContent(String.format("你好，%s，欢迎订阅",nickname));
-//                return messageAutoResponseDTO;
-                return "aaa";
+                return messageAutoResponseDTO;
             }
 
             if (event.equals("CLICK")){
@@ -153,10 +180,8 @@ public class MessageController {
                         messageAutoResponseDTO.setCreateTime(new Date().getTime());
                         messageAutoResponseDTO.setMsgType("text");
                         messageAutoResponseDTO.setContent("不在打卡范围内");
-//                        return messageAutoResponseDTO;
-                            return "aad";
+                        return messageAutoResponseDTO;
                     }
-
 
                     Date now = new Date();
                     LocalTime time = now.toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
@@ -184,8 +209,7 @@ public class MessageController {
                     messageAutoResponseDTO.setCreateTime(new Date().getTime());
                     messageAutoResponseDTO.setMsgType("text");
                     messageAutoResponseDTO.setContent(content);
-//                    return messageAutoResponseDTO;
-                    return "dfa";
+                    return messageAutoResponseDTO;
                 }
             }
 
@@ -204,7 +228,7 @@ public class MessageController {
         }
 
 
-        return "";
+        return null;
 
     }
 
